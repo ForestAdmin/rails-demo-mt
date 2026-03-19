@@ -36,6 +36,8 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
+gem "dotenv-rails", groups: [:development, :test]
+
 gem "forest_admin_rails"
 gem "forest_admin_agent"
 gem "forest_admin_datasource_toolkit"
