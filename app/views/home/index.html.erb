@@ -1,0 +1,10 @@
+<h1>Compliance Monitor Dashboard</h1>
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 800px; margin-top: 2rem;">
+  <% @stats.each do |label, count| %>
+    <div style="padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
+      <div style="font-size: 2rem; font-weight: bold;"><%= count %></div>
+      <div style="color: #666; margin-top: 0.5rem;"><%= label.to_s.humanize %></div>
+    </div>
+  <% end %>
+</div>
