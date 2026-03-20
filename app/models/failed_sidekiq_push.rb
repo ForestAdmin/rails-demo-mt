@@ -1,0 +1,2 @@
+class FailedSidekiqPush < ApplicationRecord
+end

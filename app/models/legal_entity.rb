@@ -1,11 +1,14 @@
 class LegalEntity < ApplicationRecord
-  belongs_to :parent, class_name: "LegalEntity", optional: true
-  belongs_to :tam, class_name: "Operator", optional: true
+  belongs_to :entity, polymorphic: true, optional: true
+  belongs_to :program, optional: true
 
-  has_many :children, class_name: "LegalEntity", foreign_key: :parent_id, dependent: :nullify
-  has_many :payment_orders, dependent: :destroy
-  has_many :sardine_alerts, dependent: :destroy
-  has_many :cases, class_name: "InvestigationCase", dependent: :destroy
-  has_many :rfis, dependent: :destroy
-  has_many :persona_inquiries, dependent: :destroy
+  has_many :accounts
+  has_many :bank_legal_entities
+  has_many :decisions
+  has_many :child_legal_entity_relationships, class_name: "LegalEntityRelationship", foreign_key: :parent_legal_entity_id
+  has_one :parent_legal_entity_relationship, class_name: "LegalEntityRelationship", foreign_key: :child_legal_entity_id
+
+  enum :role, { limited: "limited", standard: "standard" }
+  enum :status, { active: "active", denied: "denied", pending: "pending", suspended: "suspended" }
+  enum :risk_rating, { high: "high", low: "low", medium: "medium" }
 end
