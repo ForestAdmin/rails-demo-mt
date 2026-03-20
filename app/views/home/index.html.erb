@@ -1,4 +1,7 @@
-<h1>Compliance Monitor Dashboard</h1>
+<div style="display: flex; align-items: center; gap: 1rem;">
+  <%= image_tag "modern_treasury_logo.svg", alt: "Modern Treasury", style: "height: 40px;" %>
+  <h1 style="margin: 0;">Compliance Monitor Dashboard</h1>
+</div>
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 800px; margin-top: 2rem;">
   <% @stats.each do |label, count| %>

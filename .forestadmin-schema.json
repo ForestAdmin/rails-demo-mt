@@ -4,7 +4,7 @@
     "liana_version": "1.25.3",
     "stack": {
       "engine": "ruby",
-      "engine_version": "3.2.2"
+      "engine_version": "4.0.0"
     }
   },
   "collections": [
@@ -1573,6 +1573,22 @@
           "reference": null,
           "type": "String",
           "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "updated_at",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": true,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Date",
+          "validations": []
         }
       ],
       "icon": null,
@@ -1787,6 +1803,22 @@
           "defaultValue": null,
           "enums": [],
           "field": "triggered_at",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": true,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Date",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "updated_at",
           "integration": null,
           "inverseOf": null,
           "isFilterable": true,

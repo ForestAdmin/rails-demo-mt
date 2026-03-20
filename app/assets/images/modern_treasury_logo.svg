@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Modern Treasury logo mark - stylized M with columns -->
+  <g fill="#0D4D3D">
+    <!-- Left column -->
+    <rect x="4" y="12" width="6" height="24" rx="1"/>
+    <!-- Left-center column -->
+    <rect x="14" y="6" width="6" height="30" rx="1"/>
+    <!-- Center column -->
+    <rect x="24" y="12" width="6" height="24" rx="1"/>
+    <!-- Right-center column -->
+    <rect x="34" y="6" width="6" height="30" rx="1"/>
+    <!-- Right column -->
+    <rect x="44" y="12" width="6" height="24" rx="1"/>
+    <!-- Top bridge left -->
+    <rect x="4" y="4" width="26" height="5" rx="2"/>
+    <!-- Top bridge right -->
+    <rect x="24" y="4" width="26" height="5" rx="2"/>
+    <!-- Base -->
+    <rect x="4" y="36" width="46" height="5" rx="2"/>
+  </g>
+  <!-- Text -->
+  <text x="60" y="27" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0D4D3D" letter-spacing="0.5">MODERN</text>
+  <text x="60" y="43" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0D4D3D" letter-spacing="0.5">TREASURY</text>
+</svg>
