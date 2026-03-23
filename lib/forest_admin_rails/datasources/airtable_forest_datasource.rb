@@ -48,6 +48,9 @@ module ForestAdminRails
       def aggregate(_caller, filter, aggregation, _limit = nil)
         records = @airtable.list(filter_formula: extract_formula(filter))
         [{ value: records.count, group: {} }]
+      rescue => e
+        Rails.logger.warn("[AirtableForestCollection#aggregate] #{e.class}: #{e.message}")
+        [{ value: 0, group: {} }]
       end
 
       def create(_caller, data)
