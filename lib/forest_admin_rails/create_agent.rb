@@ -17,7 +17,6 @@ module ForestAdminRails
       require_relative "customizations/verification_customizations"
       require_relative "customizations/decision_customizations"
       require_relative "customizations/account_customizations"
-      require_relative "customizations/persona_inquiry_customizations"
       require_relative "charts"
 
       airtable_ds = ForestAdminRails::Datasources::AirtableForestDatasource.from_env(collection_name: "PersonaInquiry")
@@ -28,7 +27,6 @@ module ForestAdminRails
       ForestAdminRails::Customizations::VerificationCustomizations.apply(@create_agent)
       ForestAdminRails::Customizations::DecisionCustomizations.apply(@create_agent)
       ForestAdminRails::Customizations::AccountCustomizations.apply(@create_agent)
-      ForestAdminRails::Customizations::PersonaInquiryCustomizations.apply(@create_agent) if airtable_ds
       ForestAdminRails::Charts.register(@create_agent)
 
       # ── Remove internal collections not relevant to operators ─────────────────
