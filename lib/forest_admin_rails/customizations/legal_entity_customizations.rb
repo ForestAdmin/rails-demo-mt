@@ -14,34 +14,47 @@ module ForestAdminRails
 
       def self.add_fields(collection)
         # entity_name — Business.business_name or Individual full name
-        # (depends_on polymorphic relations is forbidden — we use entity_id/entity_type + batched DB lookup)
-        collection.computed_field("entity_name", type: "String", depends_on: ["entity_id", "entity_type"]) do |records|
-          business_ids   = records.select { |r| r["entity_type"] == "Business"    }.map { |r| r["entity_id"] }
-          individual_ids = records.select { |r| r["entity_type"] == "Individual"  }.map { |r| r["entity_id"] }
+        # depends_on ["id"] only: FA cannot project entity_id/entity_type through
+        # the polymorphic :entity relation, so we fetch them ourselves via SQL.
+        collection.computed_field("entity_name", type: "String", depends_on: ["id"]) do |records|
+          ids = records.map { |r| r["id"] }
+          refs = LegalEntity.where(id: ids).pluck(:id, :entity_id, :entity_type)
+                            .each_with_object({}) { |(id, eid, etype), h| h[id] = { id: eid, type: etype } }
+
+          business_ids   = refs.values.select { |e| e[:type] == "Business"   }.map { |e| e[:id] }
+          individual_ids = refs.values.select { |e| e[:type] == "Individual" }.map { |e| e[:id] }
           businesses     = Business.where(id: business_ids).index_by(&:id)
           individuals    = Individual.where(id: individual_ids).index_by(&:id)
 
           records.map do |r|
-            case r["entity_type"]
-            when "Business"   then businesses[r["entity_id"]]&.business_name
+            entity = refs[r["id"]]
+            next nil unless entity
+            case entity[:type]
+            when "Business"   then businesses[entity[:id]]&.business_name
             when "Individual"
-              ind = individuals[r["entity_id"]]
+              ind = individuals[entity[:id]]
               ind ? "#{ind.first_name} #{ind.last_name}".strip : nil
             end
           end
         end
 
-        # entity_email — primary_email from Business or Individual (same batched approach)
-        collection.computed_field("entity_email", type: "String", depends_on: ["entity_id", "entity_type"]) do |records|
-          business_ids   = records.select { |r| r["entity_type"] == "Business"   }.map { |r| r["entity_id"] }
-          individual_ids = records.select { |r| r["entity_type"] == "Individual" }.map { |r| r["entity_id"] }
+        # entity_email — primary_email from Business or Individual (same approach)
+        collection.computed_field("entity_email", type: "String", depends_on: ["id"]) do |records|
+          ids = records.map { |r| r["id"] }
+          refs = LegalEntity.where(id: ids).pluck(:id, :entity_id, :entity_type)
+                            .each_with_object({}) { |(id, eid, etype), h| h[id] = { id: eid, type: etype } }
+
+          business_ids   = refs.values.select { |e| e[:type] == "Business"   }.map { |e| e[:id] }
+          individual_ids = refs.values.select { |e| e[:type] == "Individual" }.map { |e| e[:id] }
           businesses     = Business.where(id: business_ids).index_by(&:id)
           individuals    = Individual.where(id: individual_ids).index_by(&:id)
 
           records.map do |r|
-            case r["entity_type"]
-            when "Business"   then businesses[r["entity_id"]]&.primary_email
-            when "Individual" then individuals[r["entity_id"]]&.primary_email
+            entity = refs[r["id"]]
+            next nil unless entity
+            case entity[:type]
+            when "Business"   then businesses[entity[:id]]&.primary_email
+            when "Individual" then individuals[entity[:id]]&.primary_email
             end
           end
         end
