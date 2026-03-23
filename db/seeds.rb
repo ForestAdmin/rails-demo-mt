@@ -273,6 +273,257 @@ Turbogrid::GridState.find_or_create_by!(search_scope: scope) { |g| g.data = { so
 puts "  ✓ Turbogrid: #{Turbogrid::SearchScope.count} scopes, #{Turbogrid::GridState.count} states"
 
 # ---------------------------------------------------------------------------
+# DEMO — Corner Coffee LLC (hero case: $45k wire, HIGH risk, SLA BREACHED)
+# ---------------------------------------------------------------------------
+
+corner_coffee_biz = Business.find_or_create_by!(business_name: "Corner Coffee LLC") do |b|
+  b.public_id               = SecureRandom.uuid
+  b.primary_email           = "ops@cornercoffee.example.com"
+  b.primary_phone           = "+12125559001"
+  b.country_of_incorporation = "US"
+  b.legal_structure         = "llc"
+  b.industry                = "food_beverage"
+  b.source_of_funds         = "retail_sales"
+  b.naics_code              = "722515"
+  b.physical_address        = addresses[4]
+  b.primary_address         = addresses[4]
+end
+
+corner_coffee_le = LegalEntity.find_or_create_by!(entity: corner_coffee_biz) do |l|
+  l.public_id    = SecureRandom.uuid
+  l.program      = standard_program
+  l.status       = "active"
+  l.role         = "standard"
+  l.risk_rating  = "high"
+  l.external_id  = "ext_corner_coffee_001"
+  l.active_at    = 4.months.ago
+end
+
+# C2 under Meridian Fintech (legal_entities[4])
+LegalEntityRelationship.find_or_create_by!(
+  parent_legal_entity: legal_entities[4],
+  child_legal_entity:  corner_coffee_le
+) do |r|
+  r.public_id          = SecureRandom.uuid
+  r.relationship_types = ["beneficial_owner"]
+  r.ownership_percentage = 100
+end
+
+corner_coffee_account = Account.find_or_create_by!(party_name: "Corner Coffee Operating") do |a|
+  a.public_id      = SecureRandom.uuid
+  a.legal_entity   = corner_coffee_le
+  a.party_address  = addresses[4]
+  a.currency       = "USD"
+  a.status         = "active"
+  a.active_at      = 4.months.ago
+end
+
+AccountBalance.find_or_create_by!(account: corner_coffee_account) do |ab|
+  ab.available_amount = 12_500_00
+  ab.posted_amount    = 12_500_00
+  ab.pending_amount   = 45_000_00
+end
+
+corner_coffee_decision = Decision.find_or_create_by!(legal_entity: corner_coffee_le, vendor_id: "inq_corner_kyb_001") do |d|
+  d.status     = "passed"
+  d.expires_at = 8.months.from_now
+  d.details    = { type: "kyb_onboarding", completed_at: 4.months.ago.iso8601 }
+end
+
+Evaluation.find_or_create_by!(decision: corner_coffee_decision, legal_entity: corner_coffee_le, vendor_id: "eval_corner_biz_001") do |e|
+  e.status  = "passed"
+  e.details = { check: "business_verification", result: "verified" }
+end
+Evaluation.find_or_create_by!(decision: corner_coffee_decision, legal_entity: corner_coffee_le, vendor_id: "eval_corner_sanctions_001") do |e|
+  e.status  = "passed"
+  e.details = { check: "sanctions_screening", result: "clear" }
+end
+
+# 90-day wire history (for Compliance full TX view)
+[
+  { amount: 12_000_00, completed_at: 45.days.ago },
+  { amount: 18_500_00, completed_at: 22.days.ago },
+  { amount: 32_000_00, completed_at: 7.days.ago  },
+].each_with_index do |attrs, i|
+  Transfer.find_or_create_by!(external_id: "xfer_cc_hist_#{i + 1}") do |t|
+    t.public_id     = SecureRandom.uuid
+    t.account       = corner_coffee_account
+    t.amount        = attrs[:amount]
+    t.currency      = "USD"
+    t.payment_type  = "wire"
+    t.direction     = "credit"
+    t.status        = "completed"
+    t.transfer_type = "payment"
+    t.account_role  = "originating"
+    t.completed_at  = attrs[:completed_at]
+  end
+end
+
+# THE hero held transfer — $45,000 wire, SLA breached (8.5h)
+cc_held = Transfer.find_or_create_by!(external_id: "xfer_cc_hero_held") do |t|
+  t.public_id     = SecureRandom.uuid
+  t.account       = corner_coffee_account
+  t.amount        = 45_000_00
+  t.currency      = "USD"
+  t.payment_type  = "wire"
+  t.direction     = "credit"
+  t.status        = "held"
+  t.held_at       = 8.5.hours.ago
+  t.transfer_type = "payment"
+  t.account_role  = "originating"
+end
+
+Verification::Sardine.find_or_create_by!(transfer: cc_held) do |v|
+  v.status           = "held"
+  v.vendor_id        = "sardine_case_cc_001"
+  v.rejection_reason = "wire_layering_pattern"
+  v.data = {
+    risk_score: 87,
+    reason:     "wire_layering_pattern",
+    alert_type: "WIRE_PATTERN",
+    contributing_factors: [
+      { code: "HIGH_VELOCITY",      description: "3 wire transfers over $10k in 45 days" },
+      { code: "UNUSUAL_AMOUNT",     description: "Transfer 40% above 90-day average" },
+      { code: "NEW_COUNTERPARTY",   description: "Beneficiary account first seen 12 days ago" }
+    ],
+    signals:  %w[high_velocity_wire unusual_counterparty amount_spike],
+    case_id:  "case_sardine_cc_001"
+  }
+end
+
+puts "  ✓ Corner Coffee LLC: hero scenario seeded (held: $45k wire, risk_score: 87)"
+
+# ---------------------------------------------------------------------------
+# DEMO — Fresh Beans Co (onboarding: KYB needs_review, UBO docs missing)
+# ---------------------------------------------------------------------------
+
+fresh_beans_addr = Address.find_or_create_by!(line1: "512 South Congress Ave", locality: "Austin") do |a|
+  a.region      = "TX"
+  a.postal_code = "78704"
+  a.country_code = "US"
+end
+
+fresh_beans_biz = Business.find_or_create_by!(business_name: "Fresh Beans Co") do |b|
+  b.public_id                = SecureRandom.uuid
+  b.primary_email            = "hello@freshbeans.example.com"
+  b.primary_phone            = "+15125559002"
+  b.country_of_incorporation = "US"
+  b.legal_structure          = "llc"
+  b.industry                 = "food_beverage"
+  b.source_of_funds          = "retail_sales"
+  b.naics_code               = "722515"
+  b.physical_address         = fresh_beans_addr
+  b.primary_address          = fresh_beans_addr
+end
+
+fresh_beans_le = LegalEntity.find_or_create_by!(entity: fresh_beans_biz) do |l|
+  l.public_id   = SecureRandom.uuid
+  l.program     = standard_program
+  l.status      = "pending"
+  l.role        = "standard"
+  l.risk_rating = "medium"
+  l.external_id = "ext_fresh_beans_001"
+  l.pending_at  = 4.days.ago
+end
+
+fresh_beans_decision = Decision.find_or_create_by!(legal_entity: fresh_beans_le, vendor_id: "inq_fresh_beans_kyb_001") do |d|
+  d.status  = "needs_review"
+  d.details = { type: "kyb_onboarding", started_at: 4.days.ago.iso8601 }
+end
+
+Evaluation.find_or_create_by!(decision: fresh_beans_decision, legal_entity: fresh_beans_le, vendor_id: "eval_fb_biz_001") do |e|
+  e.status  = "passed"
+  e.details = { check: "business_verification", result: "verified" }
+end
+Evaluation.find_or_create_by!(decision: fresh_beans_decision, legal_entity: fresh_beans_le, vendor_id: "eval_fb_sanctions_001") do |e|
+  e.status  = "passed"
+  e.details = { check: "sanctions_screening", result: "clear" }
+end
+Evaluation.find_or_create_by!(decision: fresh_beans_decision, legal_entity: fresh_beans_le, vendor_id: "eval_fb_ubo_001") do |e|
+  e.status  = "needs_review"
+  e.details = {
+    check:          "ubo_documentation",
+    result:         "incomplete",
+    ubo_count:      2,
+    ubo_verified:   false,
+    docs_collected: %w[certificate_of_incorporation ein_letter],
+    docs_missing:   %w[ubo_passport proof_of_address]
+  }
+end
+
+puts "  ✓ Fresh Beans Co: onboarding scenario seeded (UBO docs missing)"
+
+# ---------------------------------------------------------------------------
+# ONBOARDING QUEUE — 3 more pending entities
+# ---------------------------------------------------------------------------
+
+[
+  { name: "Sunrise Bakery LLC",        email: "admin@sunrisebakery.example.com",  risk: "low",    external: "ext_sunrise_001",    days_ago: 1 },
+  { name: "Tidal Wave Imports Inc",    email: "finance@tidalwave.example.com",    risk: "high",   external: "ext_tidal_001",      days_ago: 3 },
+  { name: "Green Path Consulting LLC", email: "ops@greenpath.example.com",        risk: "medium", external: "ext_greenpath_001",  days_ago: 7 },
+].each do |attrs|
+  biz = Business.find_or_create_by!(business_name: attrs[:name]) do |b|
+    b.public_id                = SecureRandom.uuid
+    b.primary_email            = attrs[:email]
+    b.country_of_incorporation = "US"
+    b.legal_structure          = "llc"
+    b.physical_address         = addresses[4]
+    b.primary_address          = addresses[4]
+  end
+  le = LegalEntity.find_or_create_by!(entity: biz) do |l|
+    l.public_id   = SecureRandom.uuid
+    l.program     = standard_program
+    l.status      = "pending"
+    l.role        = "standard"
+    l.risk_rating = attrs[:risk]
+    l.external_id = attrs[:external]
+    l.pending_at  = attrs[:days_ago].days.ago
+  end
+  Decision.find_or_create_by!(legal_entity: le, vendor_id: "inq_#{attrs[:external]}_kyb") do |d|
+    d.status  = "running"
+    d.details = { type: "kyb_onboarding" }
+  end
+end
+
+puts "  ✓ Onboarding queue: 3 more entities seeded"
+
+# ---------------------------------------------------------------------------
+# HELD PAYMENT QUEUE — 3 more transfers (varying SLA)
+# ---------------------------------------------------------------------------
+
+[
+  # ok SLA (1.5h) — Meridian account
+  { account: accounts[0], ext_id: "xfer_held_queue_1", amount: 8_750_00,  payment_type: "ach",  held_hours: 1.5, risk_score: 38, reason: "unusual_frequency" },
+  # warning SLA (4h) — Atlas account
+  { account: accounts[3], ext_id: "xfer_held_queue_2", amount: 28_500_00, payment_type: "wire", held_hours: 4.0, risk_score: 62, reason: "geo_mismatch" },
+  # breached SLA (12h) — Corner Coffee 2nd hold
+  { account: corner_coffee_account, ext_id: "xfer_held_queue_3", amount: 15_000_00, payment_type: "wire", held_hours: 12.0, risk_score: 78, reason: "new_counterparty" },
+].each do |ht|
+  t = Transfer.find_or_create_by!(external_id: ht[:ext_id]) do |t|
+    t.public_id     = SecureRandom.uuid
+    t.account       = ht[:account]
+    t.amount        = ht[:amount]
+    t.currency      = "USD"
+    t.payment_type  = ht[:payment_type]
+    t.direction     = "credit"
+    t.status        = "held"
+    t.held_at       = ht[:held_hours].hours.ago
+    t.transfer_type = "payment"
+    t.account_role  = "originating"
+  end
+  Verification::Sardine.find_or_create_by!(transfer: t) do |v|
+    v.status           = "held"
+    v.vendor_id        = "sardine_#{ht[:ext_id]}"
+    v.rejection_reason = ht[:reason]
+    v.data             = { risk_score: ht[:risk_score], reason: ht[:reason], signals: [ht[:reason]], contributing_factors: [] }
+  end
+end
+
+puts "  ✓ Held queue: #{Transfer.where(status: 'held').count} total held transfers"
+
+# ---------------------------------------------------------------------------
+load Rails.root.join("db/seeds/bulk.rb")
+
 puts "\n========================================="
 puts " Seed complete! Record counts:"
 puts "========================================="
