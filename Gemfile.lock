@@ -134,18 +134,12 @@ GEM
       faraday (>= 1, < 3)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
-    ffi (1.17.3-aarch64-linux-gnu)
-    ffi (1.17.3-aarch64-linux-musl)
-    ffi (1.17.3-arm-linux-gnu)
-    ffi (1.17.3-arm-linux-musl)
     ffi (1.17.3-arm64-darwin)
-    ffi (1.17.3-x86_64-linux-gnu)
-    ffi (1.17.3-x86_64-linux-musl)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
     filecache (1.0.3)
-    forest_admin_agent (1.26.1)
+    forest_admin_agent (1.26.2)
       activesupport (>= 6.1)
       base64
       benchmark
@@ -168,7 +162,7 @@ GEM
       rack-cors (~> 2.0)
       rake (~> 13.0)
       zeitwerk (~> 2.3)
-    forest_admin_datasource_active_record (1.26.1)
+    forest_admin_datasource_active_record (1.26.2)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
       base64
@@ -180,7 +174,7 @@ GEM
       mutex_m
       ostruct
       zeitwerk (~> 2.3)
-    forest_admin_datasource_customizer (1.26.1)
+    forest_admin_datasource_customizer (1.26.2)
       activesupport (>= 6.1)
       base64
       benchmark
@@ -192,7 +186,7 @@ GEM
       mutex_m
       ostruct
       zeitwerk (~> 2.3)
-    forest_admin_datasource_toolkit (1.26.1)
+    forest_admin_datasource_toolkit (1.26.2)
       activesupport (>= 6.1)
       base64
       benchmark
@@ -203,7 +197,7 @@ GEM
       mutex_m
       ostruct
       zeitwerk (~> 2.3)
-    forest_admin_rails (1.26.1)
+    forest_admin_rails (1.26.2)
       base64
       benchmark
       bigdecimal
@@ -310,19 +304,7 @@ GEM
       net-protocol
     net-ssh (7.3.2)
     nio4r (2.7.5)
-    nokogiri (1.19.2-aarch64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.2-aarch64-linux-musl)
-      racc (~> 1.4)
-    nokogiri (1.19.2-arm-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.2-arm-linux-musl)
-      racc (~> 1.4)
     nokogiri (1.19.2-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.2-x86_64-linux-musl)
       racc (~> 1.4)
     openid_connect (2.3.1)
       activemodel
@@ -342,12 +324,7 @@ GEM
     parser (3.3.10.2)
       ast (~> 2.4.1)
       racc
-    pg (1.6.3)
-    pg (1.6.3-aarch64-linux)
-    pg (1.6.3-aarch64-linux-musl)
     pg (1.6.3-arm64-darwin)
-    pg (1.6.3-x86_64-linux)
-    pg (1.6.3-x86_64-linux-musl)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -477,10 +454,7 @@ GEM
       faraday (~> 2.0)
       faraday-follow_redirects
     thor (1.5.0)
-    thruster (0.1.19)
-    thruster (0.1.19-aarch64-linux)
     thruster (0.1.19-arm64-darwin)
-    thruster (0.1.19-x86_64-linux)
     timeout (0.6.1)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -511,15 +485,7 @@ GEM
     zeitwerk (2.7.5)
 
 PLATFORMS
-  aarch64-linux
-  aarch64-linux-gnu
-  aarch64-linux-musl
-  arm-linux-gnu
-  arm-linux-musl
   arm64-darwin-23
-  x86_64-linux
-  x86_64-linux-gnu
-  x86_64-linux-musl
 
 DEPENDENCIES
   bootsnap
@@ -598,20 +564,14 @@ CHECKSUMS
   faraday (2.14.1) sha256=a43cceedc1e39d188f4d2cdd360a8aaa6a11da0c407052e426ba8d3fb42ef61c
   faraday-follow_redirects (0.5.0) sha256=5cde93c894b30943a5d2b93c2fe9284216a6b756f7af406a1e55f211d97d10ad
   faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
-  ffi (1.17.3-aarch64-linux-gnu) sha256=28ad573df26560f0aedd8a90c3371279a0b2bd0b4e834b16a2baa10bd7a97068
-  ffi (1.17.3-aarch64-linux-musl) sha256=020b33b76775b1abacc3b7d86b287cef3251f66d747092deec592c7f5df764b2
-  ffi (1.17.3-arm-linux-gnu) sha256=5bd4cea83b68b5ec0037f99c57d5ce2dd5aa438f35decc5ef68a7d085c785668
-  ffi (1.17.3-arm-linux-musl) sha256=0d7626bb96265f9af78afa33e267d71cfef9d9a8eb8f5525344f8da6c7d76053
   ffi (1.17.3-arm64-darwin) sha256=0c690555d4cee17a7f07c04d59df39b2fba74ec440b19da1f685c6579bb0717f
-  ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
-  ffi (1.17.3-x86_64-linux-musl) sha256=086b221c3a68320b7564066f46fed23449a44f7a1935f1fe5a245bd89d9aea56
   ffi-compiler (1.3.2) sha256=a94f3d81d12caf5c5d4ecf13980a70d0aeaa72268f3b9cc13358bcc6509184a0
   filecache (1.0.3) sha256=4eb16c1654a9457b9dd7847eb83290994ddfb4d16944b2d775f7b5e5a219307d
-  forest_admin_agent (1.26.1) sha256=fda05ff1485182c09788a8a6b4db10b54453ac97bc0d7e1970ff22147828ac0f
-  forest_admin_datasource_active_record (1.26.1) sha256=67d5181adc5a9a3cfe22841e692770d73f124d91cbda4301c72dd759093aaddd
-  forest_admin_datasource_customizer (1.26.1) sha256=77ba6e7cb0fa504d347437c9f1c68a886f01667099408676f43b31f07001021e
-  forest_admin_datasource_toolkit (1.26.1) sha256=f9e1f9a4b9d7d542074b4f27d83396400d0d4e241a7192e3d3c6da9b0f986397
-  forest_admin_rails (1.26.1) sha256=ee0f56459121d90cc1dcb1daecde0a54b9843b5466934895188f2d31e11bf9a5
+  forest_admin_agent (1.26.2) sha256=e1397f1b2a4a4814ab1177248f5b9b74e2f0d90b750c98354999e62a737a8a83
+  forest_admin_datasource_active_record (1.26.2) sha256=30ca036a7567b5435c7909d6c37089066dbed0fb1ef5754bf061b85e37945cd4
+  forest_admin_datasource_customizer (1.26.2) sha256=e99bcccc559295c3c3ca79dc92b1e2dd8370c8e86310057780df2716d6eba0f4
+  forest_admin_datasource_toolkit (1.26.2) sha256=9b99c1537d55f7f20d7aa7ff06e79f0a15530462dd229eae7f0af3d9061e5b30
+  forest_admin_rails (1.26.2) sha256=75355c9d977747433e8f49d2e925982029cd8851d99d2b0505d8d71d4a392539
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   http (5.3.1) sha256=c50802d8e9be3926cb84ac3b36d1a31fbbac383bc4cbecdce9053cb604231d7d
@@ -650,23 +610,12 @@ CHECKSUMS
   net-smtp (0.5.1) sha256=ed96a0af63c524fceb4b29b0d352195c30d82dd916a42f03c62a3a70e5b70736
   net-ssh (7.3.2) sha256=65029e213c380e20e5fd92ece663934ab0a0fe888e0cd7cc6a5b664074362dd4
   nio4r (2.7.5) sha256=6c90168e48fb5f8e768419c93abb94ba2b892a1d0602cb06eef16d8b7df1dca1
-  nokogiri (1.19.2-aarch64-linux-gnu) sha256=c34d5c8208025587554608e98fd88ab125b29c80f9352b821964e9a5d5cfbd19
-  nokogiri (1.19.2-aarch64-linux-musl) sha256=7f6b4b0202d507326841a4f790294bf75098aef50c7173443812e3ac5cb06515
-  nokogiri (1.19.2-arm-linux-gnu) sha256=b7fa1139016f3dc850bda1260988f0d749934a939d04ef2da13bec060d7d5081
-  nokogiri (1.19.2-arm-linux-musl) sha256=61114d44f6742ff72194a1b3020967201e2eb982814778d130f6471c11f9828c
   nokogiri (1.19.2-arm64-darwin) sha256=58d8ea2e31a967b843b70487a44c14c8ba1866daa1b9da9be9dbdf1b43dee205
-  nokogiri (1.19.2-x86_64-linux-gnu) sha256=fa8feca882b73e871a9845f3817a72e9734c8e974bdc4fbad6e4bc6e8076b94f
-  nokogiri (1.19.2-x86_64-linux-musl) sha256=93128448e61a9383a30baef041bf1f5817e22f297a1d400521e90294445069a8
   openid_connect (2.3.1) sha256=5d808380cff80d78e3d3d54cfaebe2d6461d835c674faa29e2314a402c1b2182
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
   parser (3.3.10.2) sha256=6f60c84aa4bdcedb6d1a2434b738fe8a8136807b6adc8f7f53b97da9bc4e9357
-  pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
-  pg (1.6.3-aarch64-linux) sha256=0698ad563e02383c27510b76bf7d4cd2de19cd1d16a5013f375dd473e4be72ea
-  pg (1.6.3-aarch64-linux-musl) sha256=06a75f4ea04b05140146f2a10550b8e0d9f006a79cdaf8b5b130cde40e3ecc2c
   pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
-  pg (1.6.3-x86_64-linux) sha256=5d9e188c8f7a0295d162b7b88a768d8452a899977d44f3274d1946d67920ae8d
-  pg (1.6.3-x86_64-linux-musl) sha256=9c9c90d98c72f78eb04c0f55e9618fe55d1512128e411035fe229ff427864009
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
@@ -705,10 +654,7 @@ CHECKSUMS
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   swd (2.0.3) sha256=4cdbe2a4246c19f093fce22e967ec3ebdd4657d37673672e621bf0c7eb770655
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
-  thruster (0.1.19) sha256=3246eb6ea6fe699e89d6eecc4edda856452e4ebeb9d5999791f0e88832369527
-  thruster (0.1.19-aarch64-linux) sha256=cfabff204f655359675c3f0e3e3940c6d1f110b765d0d48f5281077b8bb65325
   thruster (0.1.19-arm64-darwin) sha256=2e1994341ad1076cea438a5a86b0dc126dc6e66f5a67f2dc077779b73e9fb6e3
-  thruster (0.1.19-x86_64-linux) sha256=7cddc1bd0c4fb2e26cc4878dc1f4eb7e883a45932e8d1cacda71b1aba1a645b6
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
