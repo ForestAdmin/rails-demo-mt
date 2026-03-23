@@ -16,8 +16,12 @@ module ForestAdminRails
         collection.computed_field("days_held", type: "Number", depends_on: ["held_at"]) do |records|
           records.map do |r|
             held_at = r["held_at"]
+            held_at = Time.parse(held_at) if held_at.is_a?(String)
             held_at ? ((Time.now - held_at) / 86400).round(1) : nil
           end
+        rescue => e
+          Rails.logger.error("[days_held] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # sla_status — traffic light (ok < 3h, warning < 6h, breached >= 6h)
@@ -25,50 +29,77 @@ module ForestAdminRails
                                                enum_values: %w[ok warning breached]) do |records|
           records.map do |r|
             held_at = r["held_at"]
+            held_at = Time.parse(held_at) if held_at.is_a?(String)
             next nil unless held_at
             hours = (Time.now - held_at) / 3600
             hours < 3 ? "ok" : hours < 6 ? "warning" : "breached"
           end
+        rescue => e
+          Rails.logger.error("[sla_status] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # amount_display — cents to formatted dollar string
         collection.computed_field("amount_display", type: "String", depends_on: ["amount"]) do |records|
           records.map do |r|
-            amount = r["amount"]
-            amount ? "$#{format("%.2f", amount / 100.0)}" : nil
+            amount = r["amount"]&.to_i
+            amount&.positive? || amount == 0 ? "$#{format("%.2f", amount / 100.0)}" : nil
           end
+        rescue => e
+          Rails.logger.error("[amount_display] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # escalated — whether this transfer has been manually escalated to Compliance
         collection.computed_field("escalated", type: "Boolean", depends_on: ["data"]) do |records|
-          records.map { |r| r["data"]&.key?("escalated_at") || false }
+          records.map do |r|
+            data = r["data"]
+            data = JSON.parse(data) if data.is_a?(String)
+            data&.key?("escalated_at") || false
+          end
+        rescue => e
+          Rails.logger.error("[escalated] #{e.class}: #{e.message}")
+          records.map { false }
         end
 
         # escalation_priority — urgent / normal (from data jsonb)
         collection.computed_field("escalation_priority", type: "String", depends_on: ["data"]) do |records|
-          records.map { |r| r["data"]&.dig("escalation_priority") }
+          records.map do |r|
+            data = r["data"]
+            data = JSON.parse(data) if data.is_a?(String)
+            data&.dig("escalation_priority")
+          end
+        rescue => e
+          Rails.logger.error("[escalation_priority] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # sardine_risk_score — risk score from Verification::Sardine JSON (batch load)
         collection.computed_field("sardine_risk_score", type: "Number", depends_on: ["id"]) do |records|
-          ids      = records.map { |r| r["id"] }
+          ids      = records.map { |r| r["id"].to_i }
           sardines = Verification.where(transfer_id: ids, type: "Verification::Sardine")
                                  .index_by(&:transfer_id)
-          records.map { |r| sardines[r["id"]]&.data&.dig("risk_score") }
+          records.map { |r| sardines[r["id"].to_i]&.data&.dig("risk_score") }
+        rescue => e
+          Rails.logger.error("[sardine_risk_score] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # sardine_alert_reason — alert reason from Verification::Sardine JSON (batch load)
         collection.computed_field("sardine_alert_reason", type: "String", depends_on: ["id"]) do |records|
-          ids      = records.map { |r| r["id"] }
+          ids      = records.map { |r| r["id"].to_i }
           sardines = Verification.where(transfer_id: ids, type: "Verification::Sardine")
                                  .index_by(&:transfer_id)
-          records.map { |r| sardines[r["id"]]&.data&.dig("reason") }
+          records.map { |r| sardines[r["id"].to_i]&.data&.dig("reason") }
+        rescue => e
+          Rails.logger.error("[sardine_alert_reason] #{e.class}: #{e.message}")
+          records.map { nil }
         end
 
         # owner_name — name of the LegalEntity that owns the account
         # Transfer → account_id → Account → legal_entity_id → LegalEntity → entity (polymorphic, batched)
         collection.computed_field("owner_name", type: "String", depends_on: ["account_id"]) do |records|
-          account_ids   = records.map { |r| r["account_id"] }.compact.uniq
+          account_ids   = records.map { |r| r["account_id"].to_i }.compact.uniq
           le_by_account = Account.where(id: account_ids)
                                  .joins(:legal_entity)
                                  .pluck("accounts.id", "legal_entities.entity_id", "legal_entities.entity_type")
@@ -80,7 +111,7 @@ module ForestAdminRails
           individuals    = Individual.where(id: individual_ids).index_by(&:id)
 
           records.map do |r|
-            entity_ref = le_by_account[r["account_id"]]
+            entity_ref = le_by_account[r["account_id"].to_i]
             next nil unless entity_ref
             case entity_ref[:type]
             when "Business"   then businesses[entity_ref[:id]]&.business_name
@@ -89,6 +120,9 @@ module ForestAdminRails
               ind ? "#{ind.first_name} #{ind.last_name}".strip : nil
             end
           end
+        rescue => e
+          Rails.logger.error("[owner_name] #{e.class}: #{e.message}")
+          records.map { nil }
         end
       end
 
