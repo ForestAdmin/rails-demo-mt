@@ -38,15 +38,16 @@ module ForestAdminRails
         build_schema
       end
 
-      # Returns all records from Airtable. FA handles pagination in-memory.
-      def list(_caller, _filter, _projection)
-        @airtable.list
+      # Returns records from Airtable, applying id / legal_entity_id filters when present.
+      def list(_caller, filter, _projection)
+        records = @airtable.list(filter_formula: extract_formula(filter))
+        apply_id_filter(records, filter)
       end
 
       # FA calls this for count badges and the summary bar.
-      def aggregate(_caller, _filter, aggregation, _limit = nil)
-        count = @airtable.list.count
-        [{ value: count, group: {} }]
+      def aggregate(_caller, filter, aggregation, _limit = nil)
+        records = @airtable.list(filter_formula: extract_formula(filter))
+        [{ value: records.count, group: {} }]
       end
 
       def create(_caller, data)
@@ -72,6 +73,31 @@ module ForestAdminRails
       end
 
       private
+
+      # Translates a single-condition FA filter to an Airtable formula.
+      # Supports: legal_entity_id = X (for workspace sourcing)
+      # id filtering is handled in-memory by apply_id_filter (Airtable record IDs
+      # live outside the fields namespace and can't be used in filter formulas).
+      def extract_formula(filter)
+        return nil unless filter&.condition_tree
+        ct = filter.condition_tree
+        return nil unless ct.respond_to?(:field) &&
+                          ct.field == "legal_entity_id" &&
+                          ct.operator == "Equal"
+        "({legal_entity_id}='#{ct.value}')"
+      end
+
+      # Filters records by Airtable record ID in-memory (Equal / In).
+      def apply_id_filter(records, filter)
+        return records unless filter&.condition_tree
+        ct = filter.condition_tree
+        return records unless ct.respond_to?(:field) && ct.field == "id"
+        case ct.operator
+        when "Equal" then records.select { |r| r["id"] == ct.value }
+        when "In"    then records.select { |r| Array(ct.value).include?(r["id"]) }
+        else records
+        end
+      end
 
       # Build the FA schema from the Airtable Meta API response.
       # Mirrors the field-type mapping in the Node.js datasource-airtable package.

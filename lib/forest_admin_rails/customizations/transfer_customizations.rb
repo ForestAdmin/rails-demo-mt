@@ -39,6 +39,16 @@ module ForestAdminRails
           end
         end
 
+        # escalated — whether this transfer has been manually escalated to Compliance
+        collection.computed_field("escalated", type: "Boolean", depends_on: ["data"]) do |records|
+          records.map { |r| r["data"]&.key?("escalated_at") || false }
+        end
+
+        # escalation_priority — urgent / normal (from data jsonb)
+        collection.computed_field("escalation_priority", type: "String", depends_on: ["data"]) do |records|
+          records.map { |r| r["data"]&.dig("escalation_priority") }
+        end
+
         # sardine_risk_score — risk score from Verification::Sardine JSON (batch load)
         collection.computed_field("sardine_risk_score", type: "Number", depends_on: ["id"]) do |records|
           ids      = records.map { |r| r["id"] }
@@ -106,6 +116,29 @@ module ForestAdminRails
           held    = records.select { |r| r["status"] == "held" }
           held.each { |t| FlowApiClient.patch("/transfers/#{t["id"]}/release") }
           result_builder.success("#{held.count} payment(s) released")
+        end)
+
+        # Escalate to Compliance — manual escalation outside the FA Workflow
+        collection.add_action("Escalate to Compliance", ACTION.new(
+          scope: "Single",
+          form: [
+            { type: "String", label: "Reasoning", is_required: true },
+            { type: "Enum",   label: "Priority", is_required: true, default_value: "normal",
+              enum_values: %w[normal urgent] }
+          ]
+        ) do |context, result_builder|
+          transfer = context.get_record(["id", "status"])
+          if transfer["status"] == "cancelled"
+            next result_builder.error("Cannot escalate a cancelled transfer.")
+          end
+          t = Transfer.find(transfer["id"])
+          t.update!(data: t.data.merge(
+            "escalated_at"       => Time.now.iso8601,
+            "escalated_by"       => context.caller.email,
+            "escalation_priority" => context.form_values["Priority"],
+            "escalation_reasoning" => context.form_values["Reasoning"]
+          ))
+          result_builder.success("Escalated to Compliance")
         end)
 
         # Sanctions Rescan — bulk retrigger Sardine screening on selected transfers
