@@ -5,6 +5,14 @@ module ForestAdminRails
 
       def self.apply(agent)
         agent.customize_collection("LegalEntity") do |collection|
+          # Remove the polymorphic :entity relation and its FK columns.
+          # FA cannot project entity_id/entity_type without trying to resolve
+          # the polymorphic join, which crashes at query time.
+          # entity_name/entity_email computed fields fetch entity data directly
+          # via SQL on :id instead, so these columns are not needed in the schema.
+          collection.remove_field("entity")
+          collection.remove_field("entity_id")
+          collection.remove_field("entity_type")
           add_fields(collection)
           add_segments(collection)
           add_actions(collection)
