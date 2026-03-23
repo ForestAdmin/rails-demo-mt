@@ -81,10 +81,14 @@ module ForestAdminRails
       def extract_formula(filter)
         return nil unless filter&.condition_tree
         ct = filter.condition_tree
-        return nil unless ct.respond_to?(:field) &&
-                          ct.field == "legal_entity_id" &&
-                          ct.operator == "Equal"
-        "({legal_entity_id}='#{ct.value}')"
+        return nil unless ct.respond_to?(:field) && ct.field == "legal_entity_id"
+        case ct.operator
+        when "Equal"
+          "({legal_entity_id}='#{ct.value}')"
+        when "In"
+          ids = Array(ct.value).map { |v| "({legal_entity_id}='#{v}')" }.join(",")
+          "OR(#{ids})"
+        end
       end
 
       # Filters records by Airtable record ID in-memory (Equal / In).
@@ -111,10 +115,13 @@ module ForestAdminRails
         ))
 
         @airtable.schema.each do |name, meta|
+          # legal_entity_id is the FK used by the ManyToOne relation to LegalEntity.
+          # FA requires Equal + In on FK fields to emulate cross-datasource joins.
+          operators = name == "legal_entity_id" ? Set.new(["Equal", "In"]) : Set.new
           add_field(name, ForestAdminDatasourceToolkit::Schema::ColumnSchema.new(
             column_type:      meta[:column_type],
             enum_values:      meta[:enum_values] || [],
-            filter_operators: Set.new,
+            filter_operators: operators,
             is_primary_key:   false,
             is_read_only:     meta[:read_only],
             is_sortable:      false
