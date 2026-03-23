@@ -64,6 +64,22 @@
         {
           "defaultValue": null,
           "enums": [],
+          "field": "available_balance",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
           "field": "closed_at",
           "integration": null,
           "inverseOf": null,
@@ -274,6 +290,22 @@
         {
           "defaultValue": null,
           "enums": [],
+          "field": "posted_balance",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
           "field": "public_id",
           "integration": null,
           "inverseOf": null,
@@ -400,7 +432,16 @@
       "name": "Account",
       "onlyForRelationships": false,
       "paginationType": "page",
-      "segments": []
+      "segments": [
+        {
+          "id": "Account.Active",
+          "name": "Active"
+        },
+        {
+          "id": "Account.Suspended",
+          "name": "Suspended"
+        }
+      ]
     },
     {
       "actions": [],
@@ -2193,7 +2234,36 @@
       "segments": []
     },
     {
-      "actions": [],
+      "actions": [
+        {
+          "id": "Decision-0-resolve-decision",
+          "name": "Resolve Decision",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/Decision/0/resolve-decision",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": false,
+              "isReadOnly": false,
+              "field": "Notes",
+              "label": "Notes",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        }
+      ],
       "fields": [
         {
           "defaultValue": null,
@@ -2209,6 +2279,22 @@
           "isVirtual": false,
           "reference": null,
           "type": "Date",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "days_until_expiry",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Number",
           "validations": []
         },
         {
@@ -2274,6 +2360,26 @@
           "isVirtual": false,
           "reference": null,
           "type": "Date",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [
+            "expired",
+            "expiring_soon",
+            "ok"
+          ],
+          "field": "expiry_status",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Enum",
           "validations": []
         },
         {
@@ -2388,7 +2494,16 @@
       "name": "Decision",
       "onlyForRelationships": false,
       "paginationType": "page",
-      "segments": []
+      "segments": [
+        {
+          "id": "Decision.Expiring Soon",
+          "name": "Expiring Soon"
+        },
+        {
+          "id": "Decision.Needs Review",
+          "name": "Needs Review"
+        }
+      ]
     },
     {
       "actions": [],
@@ -2443,13 +2558,31 @@
         },
         {
           "defaultValue": null,
+          "enums": null,
+          "field": "documentable",
+          "integration": null,
+          "inverseOf": "Document",
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": false,
+          "isVirtual": false,
+          "polymorphic_referenced_models": [],
+          "reference": "documentable.id",
+          "relationship": "BelongsTo",
+          "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": [],
           "field": "documentable_id",
           "integration": null,
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -2465,7 +2598,7 @@
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -2925,13 +3058,31 @@
         },
         {
           "defaultValue": null,
+          "enums": null,
+          "field": "identifiable",
+          "integration": null,
+          "inverseOf": "Identification",
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": false,
+          "isVirtual": false,
+          "polymorphic_referenced_models": [],
+          "reference": "identifiable.id",
+          "relationship": "BelongsTo",
+          "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": [],
           "field": "identifiable_id",
           "integration": null,
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -2947,7 +3098,7 @@
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -3446,7 +3597,148 @@
       "segments": []
     },
     {
-      "actions": [],
+      "actions": [
+        {
+          "id": "LegalEntity-1-enable-payments",
+          "name": "Enable Payments",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/LegalEntity/1/enable-payments",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reasoning",
+              "label": "Reasoning",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        },
+        {
+          "id": "LegalEntity-0-send-rfi",
+          "name": "Send RFI",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/LegalEntity/0/send-rfi",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Template type",
+              "label": "Template type",
+              "widgetEdit": null,
+              "type": "Enum",
+              "enums": [
+                "source_of_funds",
+                "ubo_documentation",
+                "proof_of_address",
+                "transaction_purpose"
+              ],
+              "defaultValue": null
+            },
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Channel",
+              "label": "Channel",
+              "widgetEdit": null,
+              "type": "Enum",
+              "enums": [
+                "persona_link",
+                "email"
+              ],
+              "defaultValue": "persona_link"
+            },
+            {
+              "description": null,
+              "isRequired": false,
+              "isReadOnly": false,
+              "field": "Recipient email",
+              "label": "Recipient email",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            },
+            {
+              "description": null,
+              "isRequired": false,
+              "isReadOnly": false,
+              "field": "Notes",
+              "label": "Notes",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        },
+        {
+          "id": "LegalEntity-2-suspend-entity",
+          "name": "Suspend Entity",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/LegalEntity/2/suspend-entity",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reason",
+              "label": "Reason",
+              "widgetEdit": null,
+              "type": "Enum",
+              "enums": [
+                "fraud_confirmed",
+                "sanctions_hit",
+                "compliance_directive",
+                "customer_request"
+              ],
+              "defaultValue": null
+            },
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reasoning",
+              "label": "Reasoning",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        }
+      ],
       "fields": [
         {
           "defaultValue": null,
@@ -3479,6 +3771,22 @@
           "isVirtual": false,
           "reference": null,
           "type": "Date",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "active_transfers_held_count",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Number",
           "validations": []
         },
         {
@@ -3582,13 +3890,47 @@
         },
         {
           "defaultValue": null,
+          "enums": null,
+          "field": "entity",
+          "integration": null,
+          "inverseOf": "LegalEntity",
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": false,
+          "isVirtual": false,
+          "polymorphic_referenced_models": [],
+          "reference": "entity.id",
+          "relationship": "BelongsTo",
+          "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "entity_email",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": [],
           "field": "entity_id",
           "integration": null,
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -3599,12 +3941,28 @@
         {
           "defaultValue": null,
           "enums": [],
+          "field": "entity_name",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
           "field": "entity_type",
           "integration": null,
           "inverseOf": null,
           "isFilterable": true,
           "isPrimaryKey": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isRequired": false,
           "isSortable": true,
           "isVirtual": false,
@@ -3642,6 +4000,29 @@
           "isVirtual": false,
           "reference": null,
           "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [
+            "expired",
+            "failed",
+            "needs_review",
+            "none",
+            "passed",
+            "running"
+          ],
+          "field": "kyb_status",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Enum",
           "validations": []
         },
         {
@@ -3788,6 +4169,25 @@
         },
         {
           "defaultValue": null,
+          "enums": [
+            "C1",
+            "C2"
+          ],
+          "field": "tier",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Enum",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": [],
           "field": "updated_at",
           "integration": null,
@@ -3827,7 +4227,16 @@
       "name": "LegalEntity",
       "onlyForRelationships": false,
       "paginationType": "page",
-      "segments": []
+      "segments": [
+        {
+          "id": "LegalEntity.High Risk",
+          "name": "High Risk"
+        },
+        {
+          "id": "LegalEntity.Onboarding",
+          "name": "Onboarding"
+        }
+      ]
     },
     {
       "actions": [],
@@ -4017,6 +4426,254 @@
       "isSearchable": true,
       "isVirtual": false,
       "name": "LegalEntityRelationship",
+      "onlyForRelationships": false,
+      "paginationType": "page",
+      "segments": []
+    },
+    {
+      "actions": [],
+      "fields": [
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "created_at",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Dateonly",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "docs_collected",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "docs_missing",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "id",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": true,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "inquiry_id",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "legal_entity_id",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "legal_entity_name",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "notes",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "one_time_link",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "responded_at",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Dateonly",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [
+            "approved",
+            "failed",
+            "needs_review",
+            "pending"
+          ],
+          "field": "status",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [
+            "proof_of_address",
+            "source_of_funds",
+            "transaction_purpose",
+            "ubo_documentation"
+          ],
+          "field": "template_type",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "ubo_count",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "ubo_verified",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": false,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Boolean",
+          "validations": []
+        }
+      ],
+      "icon": null,
+      "integration": null,
+      "isReadOnly": false,
+      "isSearchable": false,
+      "isVirtual": false,
+      "name": "PersonaInquiry",
       "onlyForRelationships": false,
       "paginationType": "page",
       "segments": []
@@ -4938,7 +5595,118 @@
       "segments": []
     },
     {
-      "actions": [],
+      "actions": [
+        {
+          "id": "Transfer-2-block-payment",
+          "name": "Block Payment",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/Transfer/2/block-payment",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reason",
+              "label": "Reason",
+              "widgetEdit": null,
+              "type": "Enum",
+              "enums": [
+                "fraud",
+                "sanctions",
+                "compliance_directive",
+                "suspicious_activity"
+              ],
+              "defaultValue": null
+            },
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reasoning",
+              "label": "Reasoning",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            },
+            {
+              "description": null,
+              "isRequired": false,
+              "isReadOnly": false,
+              "field": "Notify customer",
+              "label": "Notify customer",
+              "widgetEdit": null,
+              "type": "Boolean",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        },
+        {
+          "id": "Transfer-1-release-held-payments",
+          "name": "Release Held Payments",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "bulk",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/Transfer/1/release-held-payments",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reasoning",
+              "label": "Reasoning",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        },
+        {
+          "id": "Transfer-0-release-payment",
+          "name": "Release Payment",
+          "submitButtonLabel": null,
+          "description": null,
+          "type": "single",
+          "baseUrl": null,
+          "endpoint": "/forest/_actions/Transfer/0/release-payment",
+          "httpMethod": "POST",
+          "redirect": null,
+          "download": false,
+          "fields": [
+            {
+              "description": null,
+              "isRequired": true,
+              "isReadOnly": false,
+              "field": "Reasoning",
+              "label": "Reasoning",
+              "widgetEdit": null,
+              "type": "String",
+              "defaultValue": null
+            }
+          ],
+          "hooks": {
+            "load": false,
+            "change": ["changeHook"]
+          }
+        }
+      ],
       "fields": [
         {
           "defaultValue": null,
@@ -5007,6 +5775,22 @@
           "isVirtual": false,
           "reference": null,
           "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "amount_display",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
           "validations": []
         },
         {
@@ -5103,6 +5887,22 @@
           "isVirtual": false,
           "reference": null,
           "type": "Json",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "days_held",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Number",
           "validations": []
         },
         {
@@ -5271,6 +6071,22 @@
         },
         {
           "defaultValue": null,
+          "enums": [],
+          "field": "owner_name",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": [
             "ach",
             "book",
@@ -5409,6 +6225,38 @@
         },
         {
           "defaultValue": null,
+          "enums": [],
+          "field": "sardine_alert_reason",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [],
+          "field": "sardine_risk_score",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Number",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
           "enums": null,
           "field": "seasonings",
           "integration": null,
@@ -5470,6 +6318,26 @@
           "isVirtual": false,
           "reference": null,
           "type": "String",
+          "validations": []
+        },
+        {
+          "defaultValue": null,
+          "enums": [
+            "breached",
+            "ok",
+            "warning"
+          ],
+          "field": "sla_status",
+          "integration": null,
+          "inverseOf": null,
+          "isFilterable": false,
+          "isPrimaryKey": false,
+          "isReadOnly": true,
+          "isRequired": false,
+          "isSortable": true,
+          "isVirtual": false,
+          "reference": null,
+          "type": "Enum",
           "validations": []
         },
         {
@@ -5594,7 +6462,12 @@
       "name": "Transfer",
       "onlyForRelationships": false,
       "paginationType": "page",
-      "segments": []
+      "segments": [
+        {
+          "id": "Transfer.Held Payments",
+          "name": "Held Payments"
+        }
+      ]
     },
     {
       "actions": [],
@@ -6669,7 +7542,12 @@
       "name": "Verification__Sardine",
       "onlyForRelationships": false,
       "paginationType": "page",
-      "segments": []
+      "segments": [
+        {
+          "id": "Verification__Sardine.Active Alerts",
+          "name": "Active Alerts"
+        }
+      ]
     },
     {
       "actions": [],
