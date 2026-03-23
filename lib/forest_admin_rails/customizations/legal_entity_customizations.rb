@@ -17,7 +17,7 @@ module ForestAdminRails
         # depends_on ["id"] only: FA cannot project entity_id/entity_type through
         # the polymorphic :entity relation, so we fetch them ourselves via SQL.
         collection.computed_field("entity_name", type: "String", depends_on: ["id"]) do |records|
-          ids = records.map { |r| r["id"] }
+          ids  = records.map { |r| r["id"].to_i }
           refs = LegalEntity.where(id: ids).pluck(:id, :entity_id, :entity_type)
                             .each_with_object({}) { |(id, eid, etype), h| h[id] = { id: eid, type: etype } }
 
@@ -27,7 +27,7 @@ module ForestAdminRails
           individuals    = Individual.where(id: individual_ids).index_by(&:id)
 
           records.map do |r|
-            entity = refs[r["id"]]
+            entity = refs[r["id"].to_i]
             next nil unless entity
             case entity[:type]
             when "Business"   then businesses[entity[:id]]&.business_name
@@ -36,11 +36,14 @@ module ForestAdminRails
               ind ? "#{ind.first_name} #{ind.last_name}".strip : nil
             end
           end
+        rescue => e
+          Rails.logger.error("[entity_name] #{e.class}: #{e.message}\n#{e.backtrace.first(3).join("\n")}")
+          records.map { nil }
         end
 
         # entity_email — primary_email from Business or Individual (same approach)
         collection.computed_field("entity_email", type: "String", depends_on: ["id"]) do |records|
-          ids = records.map { |r| r["id"] }
+          ids  = records.map { |r| r["id"].to_i }
           refs = LegalEntity.where(id: ids).pluck(:id, :entity_id, :entity_type)
                             .each_with_object({}) { |(id, eid, etype), h| h[id] = { id: eid, type: etype } }
 
@@ -50,46 +53,60 @@ module ForestAdminRails
           individuals    = Individual.where(id: individual_ids).index_by(&:id)
 
           records.map do |r|
-            entity = refs[r["id"]]
+            entity = refs[r["id"].to_i]
             next nil unless entity
             case entity[:type]
             when "Business"   then businesses[entity[:id]]&.primary_email
             when "Individual" then individuals[entity[:id]]&.primary_email
             end
           end
+        rescue => e
+          Rails.logger.error("[entity_email] #{e.class}: #{e.message}\n#{e.backtrace.first(3).join("\n")}")
+          records.map { nil }
         end
 
         # tier — C1 if not a child in any LegalEntityRelationship, C2 otherwise
         collection.computed_field("tier", type: "Enum", depends_on: ["id"],
                                           enum_values: ["C1", "C2"]) do |records|
-          ids         = records.map { |r| r["id"] }
-          child_ids   = LegalEntityRelationship.where(child_legal_entity_id: ids).pluck(:child_legal_entity_id).to_set
-          records.map { |r| child_ids.include?(r["id"]) ? "C2" : "C1" }
+          ids       = records.map { |r| r["id"].to_i }
+          child_ids = LegalEntityRelationship.where(child_legal_entity_id: ids).pluck(:child_legal_entity_id).to_set
+          records.map { |r| child_ids.include?(r["id"].to_i) ? "C2" : "C1" }
+        rescue => e
+          Rails.logger.error("[tier] #{e.class}: #{e.message}")
+          records.map { "C1" }
         end
 
         # active_transfers_held_count — held transfers across all accounts
         collection.computed_field("active_transfers_held_count", type: "Number", depends_on: ["id"]) do |records|
-          ids   = records.map { |r| r["id"] }
+          ids = records.map { |r| r["id"].to_i }.reject(&:zero?)
+          next records.map { 0 } if ids.empty?
+
           counts = ActiveRecord::Base.connection.execute(
             "SELECT a.legal_entity_id, COUNT(t.id) AS cnt
              FROM transfers t
              JOIN accounts a ON t.account_id = a.id
-             WHERE a.legal_entity_id IN (#{ids.map(&:to_i).join(",")})
+             WHERE a.legal_entity_id IN (#{ids.join(",")})
              AND t.status = 'held'
              GROUP BY a.legal_entity_id"
           ).each_with_object({}) { |row, h| h[row["legal_entity_id"].to_i] = row["cnt"].to_i }
           records.map { |r| counts.fetch(r["id"].to_i, 0) }
+        rescue => e
+          Rails.logger.error("[active_transfers_held_count] #{e.class}: #{e.message}")
+          records.map { 0 }
         end
 
         # kyb_status — latest Decision status (batch load)
         collection.computed_field("kyb_status", type: "Enum", depends_on: ["id"],
                                                 enum_values: %w[passed needs_review failed running expired none]) do |records|
-          ids      = records.map { |r| r["id"] }
-          latest   = Decision.where(legal_entity_id: ids)
-                             .order(created_at: :desc)
-                             .group_by(&:legal_entity_id)
-                             .transform_values { |decisions| decisions.first.status }
-          records.map { |r| latest.fetch(r["id"], "none") }
+          ids    = records.map { |r| r["id"].to_i }
+          latest = Decision.where(legal_entity_id: ids)
+                           .order(created_at: :desc)
+                           .group_by(&:legal_entity_id)
+                           .transform_values { |decisions| decisions.first.status }
+          records.map { |r| latest.fetch(r["id"].to_i, "none") }
+        rescue => e
+          Rails.logger.error("[kyb_status] #{e.class}: #{e.message}")
+          records.map { "none" }
         end
       end
 
