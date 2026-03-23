@@ -5,10 +5,6 @@ module ForestAdminRails
 
       def self.apply(agent)
         agent.customize_collection("LegalEntity") do |collection|
-          # Remove the polymorphic :entity relation — FA cannot project it at query time
-          # (crashes with 500, 0 SQL queries). entity_name/entity_email computed fields
-          # fetch entity data directly via SQL on :id instead.
-          collection.remove_field("entity")
           add_fields(collection)
           add_segments(collection)
           add_actions(collection)

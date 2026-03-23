@@ -29,10 +29,6 @@ module ForestAdminRails
       ForestAdminRails::Customizations::AccountCustomizations.apply(@create_agent)
       ForestAdminRails::Charts.register(@create_agent)
 
-      # ── Remove internal collections not relevant to operators ─────────────────
-      # FailedSidekiqPush — internal job error log, never useful in the UI
-      @create_agent.remove_collection("FailedSidekiqPush")
-
       # ── Remove sensitive / internal fields ────────────────────────────────────
       # Business.encrypted_kms_key — encryption key reference, should never surface in UI
       @create_agent.customize_collection("Business") do |collection|
