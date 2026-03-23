@@ -83,9 +83,9 @@ module ForestAdminRails
         ct = filter.condition_tree
         return nil unless ct.respond_to?(:field) && ct.field == "legal_entity_id"
         case ct.operator
-        when "Equal"
+        when "equal"
           "({legal_entity_id}='#{ct.value}')"
-        when "In"
+        when "in"
           ids = Array(ct.value).map { |v| "({legal_entity_id}='#{v}')" }.join(",")
           "OR(#{ids})"
         end
@@ -97,8 +97,8 @@ module ForestAdminRails
         ct = filter.condition_tree
         return records unless ct.respond_to?(:field) && ct.field == "id"
         case ct.operator
-        when "Equal" then records.select { |r| r["id"] == ct.value }
-        when "In"    then records.select { |r| Array(ct.value).include?(r["id"]) }
+        when "equal" then records.select { |r| r["id"] == ct.value }
+        when "in"    then records.select { |r| Array(ct.value).include?(r["id"]) }
         else records
         end
       end
@@ -108,20 +108,17 @@ module ForestAdminRails
       def build_schema
         add_field("id", ForestAdminDatasourceToolkit::Schema::ColumnSchema.new(
           column_type:      "String",
-          filter_operators: Set.new(["Equal", "In"]),
+          filter_operators: Set.new(["equal", "in"]),
           is_primary_key:   true,
           is_read_only:     true,
           is_sortable:      false
         ))
 
         @airtable.schema.each do |name, meta|
-          # legal_entity_id is the FK used by the ManyToOne relation to LegalEntity.
-          # FA requires Equal + In on FK fields to emulate cross-datasource joins.
-          operators = name == "legal_entity_id" ? Set.new(["Equal", "In"]) : Set.new
           add_field(name, ForestAdminDatasourceToolkit::Schema::ColumnSchema.new(
             column_type:      meta[:column_type],
             enum_values:      meta[:enum_values] || [],
-            filter_operators: operators,
+            filter_operators: Set.new,
             is_primary_key:   false,
             is_read_only:     meta[:read_only],
             is_sortable:      false
